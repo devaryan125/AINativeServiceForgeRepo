@@ -23,6 +23,22 @@ Anytime a "develop this feature" instruction arrives with only a one-line intent
 | **Out of scope** | <what it must NOT do> |
 | **Definition of Done** | <an objective, testable checklist> |
 
+## Acceptance criteria
+<numbered, independently testable Given/When/Then outcomes for success and failure behavior>
+
+## Edge cases
+| Case | Expected behavior |
+|---|---|
+| <relevant boundary or exceptional case> | <observable expected result> |
+
+## Dependencies
+- <specific prior-feature decision, required model/API, or "None">
+
+## Metrics
+| Metric | Definition / formula | Target | Verification source |
+|---|---|---|---|
+| <measurable outcome> | <how it is calculated> | <justified threshold or TBD> | <test, observable behavior, or existing telemetry> |
+
 ## Artifacts this feature touches
 <filled in later, by the developer and tester agents>
 ```
@@ -38,3 +54,10 @@ Ask: what is the next, obviously-related feature someone might be tempted to fol
 ## How to fill in "Definition of Done" correctly
 
 Every item must be something the tester agent could write one test against. If an item can't be phrased as a pass/fail check, it isn't ready to go in the spec yet — ask a clarifying question instead of guessing.
+
+## How to fill in the required sections
+
+- **Acceptance criteria:** use numbered Given/When/Then outcomes that a tester can verify independently. Cover success, validation failures, and required state changes without contradicting the Definition of Done.
+- **Edge cases:** include relevant boundaries, invalid or missing data, conflicts, and state transitions with an observable expected behavior. Keep unrelated future-feature behavior out of scope.
+- **Dependencies:** inspect every existing decision log. Name the specific prior-feature decision that is required, plus any required existing model/API. Write "None" when no dependency exists; do not treat feature ordering alone as a dependency.
+- **Metrics:** provide a definition or formula, target, and verification source for each metric. Derive targets from requirements, recorded decisions, or measurable invariants. Do not invent business targets or add telemetry requirements; mark unjustified targets "TBD" and state what needs clarification.

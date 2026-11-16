@@ -10,8 +10,14 @@ Decisions made while building Feature 1 that later features may need to retrieve
 
 **Where it lives in code:** `backend/src/main/java/com/serviceforge/service/TechnicianAvailabilityService.java`, `TRAVEL_BUFFER_MINUTES` constant.
 
-## Decision: overlap detection compares exact start times, not intervals
+## Decision: booking conflicts use half-open interval overlap
 
-**What was decided (and should probably be reconsidered):** the current overlap check in `bookJob(...)` rejects a new booking only if its start time exactly matches an existing booking's start time. It does not check whether the two time ranges genuinely overlap.
+**What was decided:** `bookJob(...)` rejects a new booking when its job interval overlaps an existing job for the same technician. Intervals are treated as half-open (`[start, end)`), so adjacent bookings whose end and start times are equal do not overlap. The check is limited to job intervals; it does not add travel-buffer enforcement.
 
-**Why it matters:** this is a live bug, not a design choice anyone defended. It means two jobs with different-but-overlapping start times for the same technician are both silently accepted. Anything that assumes "a technician's booked slots never overlap" is currently assuming something the code doesn't guarantee.
+**Why it matters:** callers can rely on a technician not receiving bookings with overlapping job intervals, while the separate 45-minute travel-buffer policy remains unchanged.
+
+**Standing rule:** `pipeline/rules/no-overlap-booking.md` makes this behavior mandatory for future changes.
+
+**When doing became deciding:** the exact step was after the new 10:00–12:00 regression booking against the seeded 09:00–11:00 job failed because no exception was thrown, and before changing production code. At that point I stopped reproducing the defect and chose the interval-overlap predicate and half-open boundary semantics.
+
+**What did not change:** the existing 45-minute travel-buffer policy (`TRAVEL_BUFFER_MINUTES = 45`) was left untouched; the fix checks job intervals only.

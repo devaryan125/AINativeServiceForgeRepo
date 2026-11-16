@@ -33,10 +33,11 @@ npm start                    # serves http://localhost:4200
 | Skills (reusable how-to knowledge) | `.claude/skills/*/SKILL.md` |
 | Feature specifications (one file per feature — see the [feature-spec convention](pipeline/features/feature-1-technician-availability.md)) | `pipeline/features/feature-N-<slug>.md` |
 | Decisions made while building a feature (what later features must remember) | `pipeline/decisions/feature-N-decisions.md` |
-| Project-wide rules | added under `pipeline/rules/` as they're written — none exist yet; the first one gets created the first time a shipped bug needs a standing rule against recurring |
+| Project-wide rules | [`pipeline/rules/`](pipeline/rules/) — read and follow the applicable rules; currently includes [no-overlap-booking.md](pipeline/rules/no-overlap-booking.md) |
 
 ## Coding conventions
 
+- **Booking:** follow [`pipeline/rules/no-overlap-booking.md`](pipeline/rules/no-overlap-booking.md): reject overlapping technician job intervals, reject invalid time ranges, and preserve the documented half-open interval boundaries.
 - **Backend (Java/Spring Boot):** package-by-layer (`model`, `data`, `service`, `controller`, `dto`); constructor injection, no field injection; REST endpoints return `ResponseEntity<T>`; validation errors return `400` with an `ApiError` body; not-found returns `404` with an `ApiError` body.
 - **Frontend (Angular):** one component per screen area under `src/app/`; HTTP calls isolated in `services/`; no business logic in components — components render and delegate.
 - **Both:** no real database, no external services — mock/in-memory data only, seeded at startup. Do not introduce a database dependency without an explicit decision recorded in `pipeline/decisions/`.

@@ -6,6 +6,8 @@ import com.serviceforge.model.Job;
 import com.serviceforge.service.TechnicianAvailabilityService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,10 @@ public class JobController {
 
     @PostMapping
     public ResponseEntity<?> bookJob(@Valid @RequestBody BookJobRequest request) {
+        if (!request.getStartTime().isBefore(request.getEndTime())) {
+            return ResponseEntity.badRequest().body(new ApiError("End time must be after start time"));
+        }
+
         try {
             Job job = availabilityService.bookJob(
                     request.getTechnicianId(),
@@ -35,5 +41,11 @@ public class JobController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(new ApiError(e.getMessage()));
         }
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleInvalidRequest(MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        return ResponseEntity.badRequest().body(new ApiError(message));
     }
 }
