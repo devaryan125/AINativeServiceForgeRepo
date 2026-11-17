@@ -16,7 +16,7 @@ That one line is the only input. Everything else below is how it gets turned int
 
 - **Role definition:** `.claude/agents/ba-agent.md`
 - **Skill it loads:** `.claude/skills/spec-generation-skill/SKILL.md`
-- **What it does:** takes the raw intent, asks what it needs to (scope, dependencies on prior features, definition of done), and commits a new file at `pipeline/features/feature-N-<slug>.md` following the same template as `pipeline/features/feature-1-technician-availability.md`.
+- **What it does:** takes the raw intent, asks what it needs to (scope, dependencies on prior features, definition of done), and commits a new file at `pipeline/features/feature-N-<slug>.md` following the template in `.claude/skills/spec-generation-skill/SKILL.md`. Every spec includes independently testable acceptance criteria, relevant edge cases, explicit dependencies, and measurable metrics with justified targets and verification sources.
 - **What it must check first:** every existing file under `pipeline/features/` and `pipeline/decisions/`, so the new spec correctly names what it depends on instead of guessing.
 - **Output:** one committed spec file. Nothing gets built yet.
 
@@ -40,7 +40,7 @@ If any step produces something that doesn't match its input (a spec with no Defi
 
 ## Human checkpoints
 
-A human should look at the output of step 1 (the spec) before step 2 starts — specs are cheap to correct, code is not. Everything else can run unattended unless something trips the safe-recovery condition above.
+A human should look at the output of step 1 (the spec, including its acceptance criteria, edge cases, dependencies, and metrics) before step 2 starts — specs are cheap to correct, code is not. Everything else can run unattended unless something trips the safe-recovery condition above.
 
 ## Running this in each tool
 

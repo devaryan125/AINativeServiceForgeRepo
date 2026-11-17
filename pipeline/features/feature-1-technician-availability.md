@@ -15,14 +15,19 @@
 - `GET /api/technicians/{id}/jobs` — a technician's booked jobs
 - `POST /api/jobs` — book a new job for a technician
 
-## Known issue
+## Fixed overlap behavior
 
-The Definition of Done above says overlapping bookings must be rejected. As shipped, **this feature does not fully do that** — see `TechnicianAvailabilityService.bookJob(...)` in the backend. This is intentional: it is the subject of the first exercise anyone doing agent-native work on this repo will run. See `pipeline/decisions/feature-1-decisions.md` for the decision this bug relates to (the travel-buffer policy), which the fix should not break.
+`TechnicianAvailabilityService.bookJob(...)` rejects overlapping job intervals for the same technician and requires the end time to be after the start time. Intervals use half-open boundaries (`[start, end)`): bookings touching at either endpoint do not overlap. The check-and-save operation is serialized to prevent concurrent requests from both booking the same time. The overlap check compares job times only; this fix does not add travel-buffer enforcement or change the 45-minute travel-buffer decision recorded in `pipeline/decisions/feature-1-decisions.md`.
+Future changes must preserve this behavior as specified in `pipeline/rules/no-overlap-booking.md`.
 
 ## Artifacts this feature touches
 
 - `backend/.../service/TechnicianAvailabilityService.java`
+- `backend/.../service/TechnicianAvailabilityServiceTest.java` — covers interval overlaps, boundaries, invalid ranges, technician scope, and concurrent requests
+- `backend/.../controller/JobControllerTest.java` — covers conflict and invalid-range responses
 - `backend/.../controller/TechnicianController.java`, `JobController.java`
 - `backend/.../model/Technician.java`, `Job.java`, `JobStatus.java`
 - `backend/.../data/MockDataStore.java`
-- No `pipeline/rules/*.md` yet — none has been needed until now
+- `pipeline/decisions/feature-1-decisions.md`
+- `pipeline/rules/no-overlap-booking.md`
+- `.claude/agents/bugfix.md`
